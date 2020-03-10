@@ -16,8 +16,9 @@ class AwsS3LoggerStack extends cdk.Stack {
     super(scope, id, props);
 
     const messageQueue = new sqs.Queue(this, 'messageQueue')
+    const s3Bucket = new s3.Bucket(this, 'messageBucket')
 
-    new lambda.Function(this, 'messageGenerator', {
+    const messageGenerator = new lambda.Function(this, 'messageGenerator', {
       name: 'Message Geneator',
       description: 'Generate messages to send to SQS',
       code: lambda.Code.asset(path.join(__dirname, '../src/lambda')),
@@ -33,15 +34,21 @@ class AwsS3LoggerStack extends cdk.Stack {
       description: 'Consumes messages from SQS and sends to S3',
       code: lambda.Code.asset(path.join(__dirname, '../src/lambda')),
       handler: 'consumer.handler',
-      runtime: lambda.Runtime.NODEJS_12_X
+      runtime: lambda.Runtime.NODEJS_12_X,
+      environment: {
+        QueueUrl: messageQueue.QueueUrl,
+        S3BucketURL: s3Bucket.
+      }
     })
 
+
     messageConsumer.addEventSource(new eventSources.SqsEventSource(messageQueue))
-
-
-
-
-
+    messageQueue.grantSendMessages(messageGenerator)
+    messageQueue.grantConsumeMessages( messageConsumer)
+    
+    //https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html
+    s3Bucket.grant(messageConsumer, 's3:PutObject')
+    
   }
 }
 

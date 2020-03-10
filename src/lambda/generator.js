@@ -5,7 +5,7 @@ const moment = require('moment-timezone')
 module.exports.handler = async (event, context) => {
     let sqs = new AWS.SQS({ apiVersion: '2012-11-05' })
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 100; i++) {
         sqs.sendMessage(buildMessage(),(error, response)=>{
             if(error)
                 break
