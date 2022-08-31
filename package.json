@@ -21,7 +21,7 @@
     "@aws-cdk/aws-sqs": "^1.27.0",
     "@aws-cdk/core": "1.27.0",
     "aws-sdk": "^2.636.0",
-    "moment-timezone": "^0.5.28",
+    "moment-timezone": "^0.5.35",
     "random-words": "^1.1.0",
     "uuid": "^7.0.2"
   }
